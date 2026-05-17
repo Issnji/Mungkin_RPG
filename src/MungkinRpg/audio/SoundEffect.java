@@ -1,4 +1,4 @@
-package audio;
+package MungkinRpg.audio;
 
 import javax.sound.sampled.*;
 import java.io.File;
