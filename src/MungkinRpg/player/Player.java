@@ -1,10 +1,10 @@
 package MungkinRpg.player;
 
-import com.MungkinRpg.core.GamePanel;
-import com.MungkinRpg.core.InputHandler;
-import com.MungkinRpg.weapon.Weapon;
-import com.MungkinRpg.weapon.WeaponManager;
-import com.MungkinRpg.util.Constants;
+import MungkinRpg.core.GamePanel;
+import MungkinRpg.core.InputHandler;
+import MungkinRpg.weapon.Weapon;
+import MungkinRpg.weapon.WeaponManager;
+import MungkinRpg.util.Constants;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 

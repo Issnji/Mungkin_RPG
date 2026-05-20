@@ -1,8 +1,8 @@
 package MungkinRpg.weapon;
 
-import com.MungkinRpg.weapon.skills.spear.ThrustSkill;
-import com.MungkinRpg.weapon.skills.spear.SpearThrow;
-import com.MungkinRpg.weapon.skills.spear.ChargeStrike;
+import  MungkinRpg.weapon.skills.spear.ThrustSkill;
+import  MungkinRpg.weapon.skills.spear.SpearThrow;
+import  MungkinRpg.weapon.skills.spear.ChargeStrike;
 
 public class Spear extends Weapon {
 

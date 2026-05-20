@@ -1,9 +1,10 @@
 package MungkinRpg.dungeon;
 
-import com.MungkinRpg.enemy.Enemy;
-import com.MungkinRpg.player.Player;
-import com.MungkinRpg.weapon.Weapon;
+import MungkinRpg.enemy.Enemy;
+import MungkinRpg.player.Player;
+import MungkinRpg.weapon.Weapon;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,35 +28,35 @@ public abstract class Dungeon {
     public abstract void draw(Graphics2D g2);
     public abstract boolean isComplete();
 
+    /**
+     * FIX: replaces the broken checkSkillHits().
+     * Uses WeaponManager.getAllActiveHitboxes() which covers both
+     * basic attacks and skill hitboxes. Call this from every subclass update().
+     */
+    protected void checkPlayerAttacks() {
+        if (!player.getWeaponManager().hasWeapon()) return;
+
+        List<Rectangle> hitboxes = player.getWeaponManager().getAllActiveHitboxes();
+        if (hitboxes.isEmpty()) return;
+
+        Weapon weapon = player.getWeaponManager().getEquippedWeapon();
+        int totalDamage = player.getStats().getAttack() + weapon.getBaseDamage();
+
+        for (Rectangle attackBox : hitboxes) {
+            for (Enemy e : enemies) {
+                if (!e.isDead() && attackBox.intersects(e.getHitbox())) {
+                    e.takeDamage(totalDamage);
+                }
+            }
+        }
+    }
+
     public void clearDungeon() {
         this.cleared = true;
         System.out.println(name + " CLEARED!");
     }
 
-    public boolean isCleared() { return cleared; }
-    public String getName() { return name; }
-    public int getDungeonId() { return dungeonId; }
-    // Tambahkan di method update() dungeon:
-    private void checkSkillHits() {
-        if (!player.getWeaponManager().hasWeapon()) return;
-
-        Weapon weapon = player.getWeaponManager().getEquippedWeapon();
-        for (Skill skill : weapon.getSkills()) {
-            if (skill != null && skill.isActive()) {
-                Rectangle hitbox = skill.getHitbox();
-                if (hitbox == null) continue;
-
-                for (Enemy e : enemies) {
-                    if (!e.isDead() && hitbox.intersects(e.getHitbox())) {
-                        // Hindari double hit berkali-kali dalam 1 aktivasi
-                        // (Bisa ditambahkan flag "hasHit" per enemy per skill activation)
-                        e.takeDamage(skill.getDamage() + player.getStats().getAttack());
-
-                        // Knockback sederhana
-                        // e.applyKnockback(dirX * 10, dirY * 10);
-                    }
-                }
-            }
-        }
-    }
+    public boolean isCleared()  { return cleared; }
+    public String getName()     { return name; }
+    public int getDungeonId()   { return dungeonId; }
 }

@@ -1,6 +1,6 @@
 package MungkinRpg.player;
 
-import com.MungkinRpg.weapon.Weapon;
+import MungkinRpg.weapon.Weapon;
 
 public class EquipmentSlot {
     private Weapon equipped;

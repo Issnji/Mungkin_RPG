@@ -1,10 +1,10 @@
-package MungkinRpg.core;
+package  MungkinRpg.core;
 
-import com.MungkinRpg.player.Player;
-import com.MungkinRpg.ui.MainMenu;
-import com.MungkinRpg.town.TownMap;
-import com.MungkinRpg.dungeon.DungeonManager;
-import com.MungkinRpg.ui.GameOverUI;
+import  MungkinRpg.player.Player;
+import  MungkinRpg.ui.MainMenu;
+import  MungkinRpg.town.TownMap;
+import  MungkinRpg.dungeon.DungeonManager;
+import  MungkinRpg.ui.GameOverUI;
 import java.awt.Graphics2D;
 
 public class SceneManager {
@@ -30,19 +30,24 @@ public class SceneManager {
         this.gameOverUI = new GameOverUI(this);
     }
 
-    public void update() {
+    // FIX: accept InputHandler so MAIN_MENU and GAME_OVER can read input
+    public void update(InputHandler input) {
         switch (currentScene) {
-            case TOWN -> townMap.update();
-            case DUNGEON -> dungeonManager.update();
-            case GAME_OVER -> gameOverUI.update();
+            case MAIN_MENU -> mainMenu.update(input);
+            case TOWN      -> townMap.update();
+            case DUNGEON   -> dungeonManager.update();
+            case GAME_OVER -> {
+                gameOverUI.update();
+                gameOverUI.handleInput(input); // FIX: was never called before
+            }
         }
     }
 
     public void draw(Graphics2D g2) {
         switch (currentScene) {
             case MAIN_MENU -> mainMenu.draw(g2);
-            case TOWN -> townMap.draw(g2);
-            case DUNGEON -> dungeonManager.draw(g2);
+            case TOWN      -> townMap.draw(g2);
+            case DUNGEON   -> dungeonManager.draw(g2);
             case GAME_OVER -> gameOverUI.draw(g2);
         }
     }

@@ -1,10 +1,8 @@
 package MungkinRpg.core;
 
-import com.MungkinRpg.player.Player;
-import com.MungkinRpg.ui.HUD;
-import com.MungkinRpg.town.TownMap;
-import com.MungkinRpg.dungeon.DungeonManager;
-import com.MungkinRpg.util.Constants;
+import MungkinRpg.player.Player;
+import MungkinRpg.ui.HUD;
+import MungkinRpg.util.Constants;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -44,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        sceneManager.update();
+        sceneManager.update(inputHandler); // FIX: pass input
         hud.update();
     }
 
@@ -52,7 +50,6 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-
         sceneManager.draw(g2);
         hud.draw(g2);
         g2.dispose();

@@ -4,7 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class InputHandler implements KeyListener {
-    public boolean up, down, left, right, attack, skill1, skill2, skill3, interact, escape;
+    public boolean up, down, left, right, attack, skill1, skill2, skill3, interact, escape, enter;
 
     @Override
     public void keyTyped(KeyEvent e) {}
@@ -23,6 +23,7 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_SEMICOLON -> skill3 = true;
             case KeyEvent.VK_E -> interact = true;
             case KeyEvent.VK_ESCAPE -> escape = true;
+            case KeyEvent.VK_ENTER -> enter = true;
         }
     }
 
@@ -40,6 +41,11 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_SEMICOLON -> skill3 = false;
             case KeyEvent.VK_E -> interact = false;
             case KeyEvent.VK_ESCAPE -> escape = false;
+            case KeyEvent.VK_ENTER -> enter = false;
         }
     }
+
+    // Getter methods (used by TownMap, etc.)
+    public boolean isInteract() { return interact; }
+    public boolean isEscape()   { return escape; }
 }

@@ -1,7 +1,7 @@
 package MungkinRpg.ui;
 
-import com.MungkinRpg.dungeon.DungeonManager;
-import com.MungkinRpg.core.InputHandler;
+import MungkinRpg.dungeon.DungeonManager;
+import MungkinRpg.core.InputHandler;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;

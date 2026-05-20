@@ -1,8 +1,9 @@
-package MungkinRpg.dungeon.dungeon1;
+package  MungkinRpg.dungeon.dungeon1;
 
-import com.MungkinRpg.dungeon.Dungeon;
-import com.MungkinRpg.enemy.Slime;
-import com.MungkinRpg.player.Player;
+import  MungkinRpg.dungeon.Dungeon;
+import  MungkinRpg.enemy.Enemy;   // FIX: was missing
+import  MungkinRpg.enemy.Slime;
+import  MungkinRpg.player.Player;
 import java.awt.Graphics2D;
 import java.awt.Color;
 
@@ -17,7 +18,6 @@ public class DungeonOne extends Dungeon {
     @Override
     public void init() {
         enemies.clear();
-        // Spawn beberapa slime
         enemies.add(new Slime(200, 200));
         enemies.add(new Slime(400, 300));
         enemies.add(new Slime(600, 200));
@@ -27,13 +27,15 @@ public class DungeonOne extends Dungeon {
 
     @Override
     public void update() {
+        checkPlayerAttacks(); // FIX: enemies can now take damage from player
+
         for (Enemy e : enemies) {
             e.update();
-            // Cek collision dengan player
             if (e.getHitbox().intersects(player.getHitbox())) {
                 player.takeDamage(e.getDamage());
             }
         }
+
         enemies.removeIf(e -> {
             if (e.isDead()) {
                 enemiesKilled++;
@@ -48,8 +50,10 @@ public class DungeonOne extends Dungeon {
     @Override
     public void draw(Graphics2D g2) {
         g2.setColor(Color.DARK_GRAY);
-        g2.fillRect(0, 0, 800, 600); // Background dungeon
+        g2.fillRect(0, 0, 800, 600);
         for (Enemy e : enemies) e.draw(g2);
+        g2.setColor(Color.WHITE);
+        g2.drawString("Enemies: " + enemiesKilled + "/" + enemiesToKill, 20, 580);
     }
 
     @Override

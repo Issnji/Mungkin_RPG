@@ -1,8 +1,8 @@
 package MungkinRpg.weapon;
 
-import com.MungkinRpg.player.Player;
-import com.MungkinRpg.core.InputHandler;
-import com.MungkinRpg.weapon.skills.Skill;
+import  MungkinRpg.player.Player;
+import  MungkinRpg.core.InputHandler;
+import  MungkinRpg.weapon.skills.Skill;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 

@@ -1,6 +1,6 @@
 package MungkinRpg.town;
 
-import com.MungkinRpg.core.SceneManager;
+import MungkinRpg.core.SceneManager;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Rectangle;

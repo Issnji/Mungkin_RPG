@@ -1,6 +1,6 @@
 package MungkinRpg.weapon;
 
-import com.MungkinRpg.weapon.skills.Skill;
+import MungkinRpg.weapon.skills.Skill;
 import java.awt.Graphics2D;
 
 public abstract class Weapon {

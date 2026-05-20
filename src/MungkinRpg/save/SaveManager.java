@@ -1,7 +1,7 @@
 package MungkinRpg.save;
 
-import com.MungkinRpg.player.Player;
-import com.MungkinRpg.dungeon.DungeonManager;
+import MungkinRpg.player.Player;
+import MungkinRpg.dungeon.DungeonManager;
 import java.io.*;
 
 public class SaveManager {

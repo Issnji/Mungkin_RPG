@@ -1,6 +1,6 @@
 package MungkinRpg.core;
 
-import com.MungkinRpg.player.Player;
+import MungkinRpg.player.Player;
 import java.awt.Rectangle;
 
 public class CollisionChecker {

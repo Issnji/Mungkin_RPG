@@ -1,6 +1,6 @@
 package MungkinRpg;
 
-import com.MungkinRpg.core.GamePanel;
+import MungkinRpg.core.GamePanel;
 import javax.swing.JFrame;
 
 public class Main {

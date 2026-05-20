@@ -1,8 +1,8 @@
 package MungkinRpg.weapon;
 
-import com.MungkinRpg.weapon.skills.bow.TripleArrow;
-import com.MungkinRpg.weapon.skills.bow.RainArrow;
-import com.MungkinRpg.weapon.skills.bow.PiercingShot;
+import  MungkinRpg.weapon.skills.bow.TripleArrow;
+import  MungkinRpg.weapon.skills.bow.RainArrow;
+import  MungkinRpg.weapon.skills.bow.PiercingShot;
 
 public class Bow extends Weapon {
 

@@ -1,7 +1,7 @@
 package MungkinRpg.ui;
 
-import com.MungkinRpg.player.Player;
-import com.MungkinRpg.util.Constants;
+import  MungkinRpg.player.Player;
+import  MungkinRpg.util.Constants;
 import java.awt.Graphics2D;
 import java.awt.Color;
 

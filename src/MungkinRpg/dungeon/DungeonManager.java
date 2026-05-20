@@ -1,12 +1,12 @@
 package MungkinRpg.dungeon;
 
-import com.MungkinRpg.core.GamePanel;
-import com.MungkinRpg.core.SceneManager;
-import com.MungkinRpg.dungeon.dungeon1.DungeonOne;
-import com.MungkinRpg.dungeon.dungeon2.DungeonTwo;
-import com.MungkinRpg.dungeon.dungeon3.DungeonBoss;
-import com.MungkinRpg.ui.DungeonSelectUI;
-import com.MungkinRpg.player.Player;
+import  MungkinRpg.core.GamePanel;
+import  MungkinRpg.core.SceneManager;
+import  MungkinRpg.dungeon.dungeon1.DungeonOne;
+import  MungkinRpg.dungeon.dungeon2.DungeonTwo;
+import  MungkinRpg.dungeon.dungeon3.DungeonBoss;
+import  MungkinRpg.ui.DungeonSelectUI;
+import  MungkinRpg.player.Player;
 import java.awt.Graphics2D;
 
 public class DungeonManager {

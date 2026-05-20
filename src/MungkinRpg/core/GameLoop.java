@@ -1,11 +1,11 @@
 package MungkinRpg.core;
 
 public class GameLoop {
-    private GamePanel panel;
+    private MungkinRpg.core.GamePanel panel;
     private final int FPS = 60;
     private final double DRAW_INTERVAL = 1000000000.0 / FPS;
 
-    public GameLoop(GamePanel panel) {
+    public GameLoop(MungkinRpg.core.GamePanel panel) {
         this.panel = panel;
     }
 

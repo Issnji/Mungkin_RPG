@@ -1,6 +1,6 @@
 package MungkinRpg.weapon.skills.spear;
 
-import com.MungkinRpg.weapon.skills.Skill;
+import MungkinRpg.weapon.skills.Skill;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Color;

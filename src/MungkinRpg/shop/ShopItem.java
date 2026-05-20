@@ -1,6 +1,6 @@
 package MungkinRpg.shop;
 
-import com.MungkinRpg.weapon.Weapon;
+import MungkinRpg.weapon.Weapon;
 
 public class ShopItem {
     private String name;

@@ -1,7 +1,7 @@
-package MungkinRpg.ui;
+package  MungkinRpg.ui;
 
-import com.MungkinRpg.player.Player;
-import com.MungkinRpg.weapon.skills.Skill;
+import  MungkinRpg.player.Player;
+import  MungkinRpg.weapon.skills.Skill;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;

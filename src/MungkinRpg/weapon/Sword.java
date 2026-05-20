@@ -1,8 +1,8 @@
 package MungkinRpg.weapon;
 
-import com.MungkinRpg.weapon.skills.sword.SlashSkill;
-import com.MungkinRpg.weapon.skills.sword.SpinAttack;
-import com.MungkinRpg.weapon.skills.sword.DashSlash;
+import  MungkinRpg.weapon.skills.sword.SlashSkill;
+import  MungkinRpg.weapon.skills.sword.SpinAttack;
+import  MungkinRpg.weapon.skills.sword.DashSlash;
 
 public class Sword extends Weapon {
 

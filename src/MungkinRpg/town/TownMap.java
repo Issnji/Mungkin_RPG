@@ -1,11 +1,11 @@
-package MungkinRpg.town;
+package  MungkinRpg.town;
 
-import com.MungkinRpg.core.GamePanel;
-import com.MungkinRpg.core.InputHandler;
-import com.MungkinRpg.core.SceneManager;
-import com.MungkinRpg.player.Player;
-import com.MungkinRpg.shop.Shop;
-import com.MungkinRpg.util.Constants;
+import  MungkinRpg.core.GamePanel;
+import  MungkinRpg.core.InputHandler;
+import  MungkinRpg.core.SceneManager;
+import  MungkinRpg.player.Player;
+import  MungkinRpg.shop.Shop;
+import  MungkinRpg.util.Constants;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -42,41 +42,41 @@ public class TownMap {
         nearShop = player.getHitbox().intersects(shopArea);
         if (nearShop && input.isInteract() && !shop.isOpen()) {
             shop.open();
+            input.interact = false;
         }
         if (shop.isOpen()) {
             shop.update(input);
-            if (input.isEscape()) shop.close();
-            return; // block input lain
+            return;
         }
 
-        // --- NPC LOGIC (TOMBOL SAJA) ---
+        // --- NPC LOGIC ---
         if (player.getHitbox().intersects(npc.getHitbox()) && input.isInteract() && !npc.isTalking()) {
             npc.interact();
+            input.interact = false; // FIX: prevents immediate dialogue advance on same frame
         }
         if (npc.isTalking()) {
-            // ⬇⬇⬇ TARUH 1: Logika tombol next dialog ⬇⬇⬇
             if (input.isInteract()) {
                 npc.nextDialogue();
+                input.interact = false;
             }
-            return; // block input lain saat ngomong
+            return;
         }
 
         // --- GATE LOGIC ---
         boolean nearGate = player.getHitbox().intersects(gate.getHitbox());
         gate.update(nearGate);
         if (nearGate && input.isInteract()) {
+            input.interact = false;
             gate.activate();
         }
 
-        // --- KE DUNGEON LOBBY ---
-        if (input.isEscape() && !shop.isOpen() && !npc.isTalking()) {
+        // --- DUNGEON LOBBY SHORTCUT ---
+        if (input.isEscape()) {
+            input.escape = false;
             sceneManager.changeScene(SceneManager.Scene.DUNGEON);
         }
     }
 
-    // ============================================================
-    // 2. METHOD DRAW — Tempat gambar (ADA g2!)
-    // ============================================================
     public void draw(Graphics2D g2) {
         // Background kota
         g2.setColor(new Color(100, 150, 100));
@@ -86,7 +86,6 @@ public class TownMap {
         g2.setColor(new Color(150, 120, 80));
         g2.fillRect(200, 300, 400, 100);
 
-        // Gate & NPC
         gate.draw(g2);
         npc.draw(g2);
 
@@ -96,7 +95,6 @@ public class TownMap {
         g2.setColor(Color.BLACK);
         g2.drawString("WEAPON SHOP", shopArea.x + 10, shopArea.y + 45);
 
-        // Player
         player.draw(g2);
 
         // Prompts
@@ -114,15 +112,8 @@ public class TownMap {
             g2.drawString("Press E to Talk", npc.getHitbox().x, npc.getHitbox().y - 10);
         }
 
-        // --- UI OVERLAY (GAMBAR DI ATAS SEMUA) ---
-        if (shop.isOpen()) {
-            shop.draw(g2);
-        }
-
-        // ⬇⬇⬇ TARUH 2: Gambar dialog box ⬇⬇⬇
-        if (npc.isTalking()) {
-            npc.drawDialogue(g2);
-        }
+        if (shop.isOpen()) shop.draw(g2);
+        if (npc.isTalking()) npc.drawDialogue(g2);
 
         g2.setColor(Color.WHITE);
         g2.drawString("Press ESC to go to Dungeon Lobby", 10, 20);
