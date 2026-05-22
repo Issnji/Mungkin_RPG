@@ -4,34 +4,45 @@ import MungkinRpg.player.Player;
 import MungkinRpg.ui.HUD;
 import MungkinRpg.util.Constants;
 import javax.swing.JPanel;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 
+/**
+ * GamePanel: panel utama game.
+ * Dengan pendekatan Swing + CardLayout, GamePanel tidak perlu lagi
+ * mengurus scene MAIN_MENU — itu ditangani oleh MainMenuPanel.
+ * SceneManager sekarang hanya punya: TOWN, DUNGEON, DUNGEON_CLEAR, GAME_OVER.
+ */
 public class GamePanel extends JPanel implements Runnable {
-    private Thread gameThread;
-    private GameLoop gameLoop;
+
+    private Thread      gameThread;
+    private GameLoop    gameLoop;
     private SceneManager sceneManager;
     private InputHandler inputHandler;
+    private Player      player;
+    private HUD         hud;
 
-    private Player player;
-    private HUD hud;
+    private boolean started = false; // cegah double start
 
     public GamePanel() {
-        this.setPreferredSize(new Dimension(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
-        this.setDoubleBuffered(true);
-        this.setFocusable(true);
+        setPreferredSize(new Dimension(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
+        setDoubleBuffered(true);
+        setFocusable(true);
 
-        this.inputHandler = new InputHandler();
-        this.addKeyListener(inputHandler);
+        inputHandler = new InputHandler();
+        addKeyListener(inputHandler);
 
-        this.player = new Player();
-        this.hud = new HUD(player);
-        this.sceneManager = new SceneManager(this, player);
-        this.gameLoop = new GameLoop(this);
+        player       = new Player();
+        hud          = new HUD(player);
+        sceneManager = new SceneManager(this, player);
+        gameLoop     = new GameLoop(this);
     }
 
+    /** Dipanggil oleh Main.java saat PLAY diklik — hanya sekali. */
     public void startGame() {
+        if (started) return;
+        started = true;
+        // Scene awal langsung TOWN (main menu sudah di layer Swing)
+        sceneManager.changeScene(SceneManager.Scene.TOWN);
         gameThread = new Thread(this);
         gameThread.start();
     }
@@ -42,20 +53,22 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        sceneManager.update(inputHandler); // FIX: pass input
+        sceneManager.update(inputHandler);
         hud.update();
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
         sceneManager.draw(g2);
         hud.draw(g2);
         g2.dispose();
     }
 
-    public InputHandler getInputHandler() { return inputHandler; }
-    public Player getPlayer() { return player; }
-    public SceneManager getSceneManager() { return sceneManager; }
+    public InputHandler  getInputHandler()  { return inputHandler; }
+    public Player        getPlayer()        { return player; }
+    public SceneManager  getSceneManager()  { return sceneManager; }
 }

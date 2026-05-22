@@ -14,7 +14,7 @@ public class AssetLoader {
         if (images.containsKey(path)) return images.get(path);
 
         try {
-            BufferedImage img = ImageIO.read(new File("src/com/MungkinRpg/assets/images/" + path));
+            BufferedImage img = ImageIO.read(new File("src/MungkinRpg/assets/image/" + path));
             images.put(path, img);
             return img;
         } catch (IOException e) {

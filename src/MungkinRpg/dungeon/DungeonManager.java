@@ -1,98 +1,104 @@
 package MungkinRpg.dungeon;
 
-import  MungkinRpg.core.GamePanel;
-import  MungkinRpg.core.SceneManager;
-import  MungkinRpg.dungeon.dungeon1.DungeonOne;
-import  MungkinRpg.dungeon.dungeon2.DungeonTwo;
-import  MungkinRpg.dungeon.dungeon3.DungeonBoss;
-import  MungkinRpg.ui.DungeonSelectUI;
-import  MungkinRpg.player.Player;
-import java.awt.Graphics2D;
+import MungkinRpg.core.GamePanel;
+import MungkinRpg.core.SceneManager;
+import MungkinRpg.dungeon.dungeon1.DungeonOne;
+import MungkinRpg.dungeon.dungeon2.DungeonTwo;
+import MungkinRpg.dungeon.dungeon3.DungeonBoss;
+import MungkinRpg.player.Player;
+import java.awt.*;
 
 public class DungeonManager {
-    private GamePanel panel;
-    private Player player;
+    private GamePanel    panel;
+    private Player       player;
     private SceneManager sceneManager;
-    private DungeonSelectUI dungeonSelectUI;
 
-    private DungeonOne dungeon1;
-    private DungeonTwo dungeon2;
+    private DungeonOne  dungeon1;
+    private DungeonTwo  dungeon2;
     private DungeonBoss dungeon3;
-    private Dungeon currentDungeon;
-
-    private boolean inLobby; // Sebelum masuk dungeon, pilih senjata dulu
-    private int selectedDungeon;
+    private Dungeon     currentDungeon;
 
     public DungeonManager(GamePanel panel, Player player, SceneManager sceneManager) {
-        this.panel = panel;
-        this.player = player;
+        this.panel        = panel;
+        this.player       = player;
         this.sceneManager = sceneManager;
 
-        this.dungeon1 = new DungeonOne(player);
-        this.dungeon2 = new DungeonTwo(player);
-        this.dungeon3 = new DungeonBoss(player);
-        this.dungeonSelectUI = new DungeonSelectUI(this);
+        dungeon1 = new DungeonOne(player);
+        dungeon2 = new DungeonTwo(player);
+        dungeon3 = new DungeonBoss(player);
     }
 
-    public void enterLobby() {
-        inLobby = true;
-        selectedDungeon = 1;
-        dungeonSelectUI.setActive(true);
-
-        // Player bisa ganti senjata di sini
+    // ----------------------------------------------------------------
+    /**
+     * Dipanggil saat player masuk gate di kota.
+     * Langsung masuk dungeon berikutnya tanpa layar pemilihan:
+     *   - Dungeon 1 → jika belum clear
+     *   - Dungeon 2 → jika dungeon 1 sudah clear
+     *   - Dungeon 3 → jika dungeon 2 sudah clear
+     *   - Dungeon 3 lagi → jika semua sudah clear (replay boss)
+     */
+    public void enterDirect() {
+        if      (!dungeon1.isCleared()) startDungeon(1);
+        else if (!dungeon2.isCleared()) startDungeon(2);
+        else                            startDungeon(3);
     }
 
-    public void startDungeon(int dungeonId) {
-        inLobby = false;
-        switch (dungeonId) {
+    // Untuk kompatibilitas dengan SceneManager lama
+    public void enterLobby() { enterDirect(); }
+
+    // ----------------------------------------------------------------
+    public void startDungeon(int id) {
+        switch (id) {
             case 1 -> currentDungeon = dungeon1;
-            case 2 -> {
-                if (!dungeon1.isCleared()) return; // Harus clear dungeon 1 dulu
-                currentDungeon = dungeon2;
-            }
-            case 3 -> {
-                if (!dungeon2.isCleared()) return; // Harus clear dungeon 2 dulu
-                currentDungeon = dungeon3;
-            }
+            case 2 -> currentDungeon = dungeon2;
+            case 3 -> currentDungeon = dungeon3;
+            default -> { return; }
         }
         currentDungeon.init();
         player.resetPosition();
     }
 
+    // ----------------------------------------------------------------
     public void update() {
-        if (inLobby) {
-            // UI pemilihan dungeon & ganti senjata
-            if (panel.getInputHandler().skill1) startDungeon(1);
-            if (panel.getInputHandler().skill2 && dungeon1.isCleared()) startDungeon(2);
-            if (panel.getInputHandler().skill3 && dungeon2.isCleared()) startDungeon(3);
-            dungeonSelectUI.update(panel.getInputHandler());
-        } else {
-            currentDungeon.update();
-            if (currentDungeon.isComplete()) {
-                currentDungeon.clearDungeon();
-                player.getLevelSystem().addDungeonClearBonus();
-                sceneManager.changeScene(SceneManager.Scene.TOWN);
-            }
-            if (player.isDead()) {
-                sceneManager.changeScene(SceneManager.Scene.GAME_OVER);
-            }
+        if (currentDungeon == null) return;
+
+        currentDungeon.update();
+
+        // --- Dungeon selesai ---
+        if (currentDungeon.isComplete()) {
+            currentDungeon.clearDungeon();
+
+            // Hitung reward sebelum diberikan agar bisa ditampilkan di layar
+            int expBonus  = player.getLevelSystem().getExpToNextLevel();
+            int goldBonus = 100 * player.getLevelSystem().getLevel();
+
+            // Berikan reward ke player
+            player.getLevelSystem().addDungeonClearBonus();
+
+            int newLevel = player.getLevelSystem().getLevel();
+
+            // Tampilkan layar reward alih-alih langsung kembali ke kota
+            sceneManager.showDungeonClear(
+                    currentDungeon.getName(),
+                    expBonus,
+                    goldBonus,
+                    newLevel
+            );
+            return;
+        }
+
+        // --- Player mati ---
+        if (player.isDead()) {
+            sceneManager.changeScene(SceneManager.Scene.GAME_OVER);
         }
     }
 
+    // ----------------------------------------------------------------
     public void draw(Graphics2D g2) {
-        if (inLobby) {
-            // Draw dungeon selection UI
-            g2.drawString("DUNGEON LOBBY", 300, 200);
-            g2.drawString("1. Dungeon One " + (dungeon1.isCleared() ? "[CLEARED]" : ""), 300, 250);
-            g2.drawString("2. Dungeon Two " + (dungeon2.isCleared() ? "[CLEARED]" : "[LOCKED]"), 300, 280);
-            g2.drawString("3. Boss Dungeon " + (dungeon3.isCleared() ? "[CLEARED]" : "[LOCKED]"), 300, 310);
-            g2.drawString("Press K/L/; to select", 300, 350);
-            dungeonSelectUI.draw(g2);
-        } else {
-            currentDungeon.draw(g2);
-        }
+        if (currentDungeon != null) currentDungeon.draw(g2);
     }
 
+    // ----------------------------------------------------------------
     public boolean isDungeonCleared(int id) {
         return switch (id) {
             case 1 -> dungeon1.isCleared();
