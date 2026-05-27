@@ -1,14 +1,15 @@
 package MungkinRpg.player;
 
-import MungkinRpg.core.GamePanel;
 import MungkinRpg.core.InputHandler;
-import MungkinRpg.weapon.Weapon;
-import MungkinRpg.weapon.WeaponManager;
+import MungkinRpg.util.AssetLoader;
 import MungkinRpg.util.Constants;
+import MungkinRpg.weapon.WeaponManager;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
 public class Player {
+    private BufferedImage playerSprite;
     private int x, y;
     private int speed;
     private Rectangle hitbox;
@@ -32,6 +33,7 @@ public class Player {
         this.levelSystem = new LevelSystem(this);
         this.inventory = new Inventory();
         this.weaponManager = new WeaponManager(this);
+        this.playerSprite = AssetLoader.loadImage("netral.png");
     }
 
     public void update(InputHandler input) {
@@ -60,8 +62,19 @@ public class Player {
     }
 
     public void draw(Graphics2D g2) {
-        g2.fillRect(x, y, 32, 32); // Placeholder sprite
+        if (playerSprite != null) {
+            // Menggambar gambar netral.png
+            // Jika sprite terlalu kecil/besar, ubah angka lebar dan tinggi (misal 64, 64)
+            // x - 16 dan y - 16 adalah offset agar gambar berada di tengah hitbox
+            g2.drawImage(playerSprite, x - 16, y - 32, 64, 104, null);
+        } else {
+            // Fallback (render kotak warna jika file netral.png gagal dimuat)
+            g2.setColor(new java.awt.Color(50, 150, 250));
+            g2.fillRect(x, y, 32, 32); // Sesuaikan ukuran hitbox asli
+        }
         weaponManager.draw(g2);
+        // (Jika ada kode lain di dalam metode draw seperti health bar atau nama,
+        //  biarkan kode tersebut tetap berada di bawah sini)
     }
 
     public void takeDamage(int damage) {

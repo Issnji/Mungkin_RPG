@@ -76,6 +76,7 @@ public class TownMap {
 
     // Optional background image (overrides tilemap if present)
     private BufferedImage bgImage;
+    private BufferedImage shopImage;
 
     public TownMap(GamePanel panel, Player player, SceneManager sceneManager) {
         this.panel        = panel;
@@ -91,6 +92,7 @@ public class TownMap {
         this.gate        = new TeleportGate(80, 280, sceneManager);
         this.tileManager = new TileManager();
         this.bgImage     = AssetLoader.loadImage("town_bg.png");
+        this.shopImage = AssetLoader.loadImage("shop.png");
     }
 
     // ----------------------------------------------------------------
@@ -148,7 +150,7 @@ public class TownMap {
 
         // --- OBJEK ---
         gate.draw(g2);
-        drawShopStand(g2);
+        drawShop(g2);
         npc.draw(g2);
         player.draw(g2);
 
@@ -208,58 +210,29 @@ public class TownMap {
         g2.fillOval(tx + 9, ty + 3, 10, 8);
     }
 
-    private void drawShopStand(Graphics2D g2) {
-        int sx = shopArea.x - 10, sy = shopArea.y - 40;
-        int sw = shopArea.width + 20, sh = shopArea.height + 15;
+    private void drawShop(Graphics2D g2) {
+        int sx = shopArea.x;
+        int sy = shopArea.y;
+        int sw = shopArea.width;
+        int sh = shopArea.height;
 
-        // Dinding belakang
-        g2.setColor(new Color(155, 95, 45));
-        g2.fillRect(sx, sy + 20, sw, sh);
+        if (shopImage != null) {
+            // Menggambar shop.png dengan offset koordinat agar bangunan berdiri pas di atas area jalan
+            g2.drawImage(shopImage, sx - 175, sy - 135, sw + 320, sh + 200, null);
+        } else {
+            // Fallback render geometris lama jika file shop.png tidak ditemukan
+            g2.setColor(new Color(130, 40, 20));
+            g2.fillPolygon(new int[]{sx-15, sx+sw/2, sx+sw+15}, new int[]{sy, sy-40, sy}, 3);
+            g2.setColor(new Color(180, 140, 90));
+            g2.fillRect(sx, sy, sw, sh);
 
-        // Atap awning
-        GradientPaint aw = new GradientPaint(sx, sy, new Color(200, 55, 35),
-                sx + sw, sy, new Color(225, 100, 28));
-        g2.setPaint(aw);
-        g2.fillPolygon(new int[]{sx-12, sx+sw+12, sx+sw, sx},
-                new int[]{sy+20,  sy+20,   sy+5,  sy+5}, 4);
-        // Garis awning
-        g2.setColor(new Color(255, 255, 255, 55));
-        for (int i = 0; i < sw+24; i += 15)
-            g2.fillPolygon(new int[]{sx-12+i, sx-12+i+7, sx+i+7, sx+i},
-                    new int[]{sy+20,    sy+20,    sy+5,   sy+5}, 4);
-        // Fringe
-        g2.setColor(new Color(220, 215, 55));
-        for (int fx = sx-12; fx < sx+sw+12; fx += 11)
-            g2.fillOval(fx, sy+18, 9, 6);
-
-        // Meja counter
-        g2.setColor(new Color(185, 125, 65));
-        g2.fillRect(sx, sy+sh-18, sw, 18);
-        g2.setColor(new Color(205, 155, 85));
-        g2.fillRect(sx, sy+sh-20, sw, 4);
-
-        // Display senjata — Pedang
-        g2.setColor(new Color(195, 195, 215)); g2.fillRect(sx+15, sy+sh-44, 5, 22);
-        g2.setColor(new Color(175, 135, 48));  g2.fillRect(sx+11, sy+sh-24, 13, 4);
-        g2.fillOval(sx+13, sy+sh-46, 8, 8);
-        // Busur
-        g2.setColor(new Color(155, 95, 38));
-        g2.setStroke(new BasicStroke(3f));
-        g2.drawArc(sx+37, sy+sh-46, 14, 26, -70, 140);
-        g2.setColor(new Color(215, 210, 175)); g2.setStroke(new BasicStroke(1f));
-        g2.drawLine(sx+38, sy+sh-39, sx+38, sy+sh-26);
-        // Tombak
-        g2.setColor(new Color(155, 95, 38)); g2.setStroke(new BasicStroke(3f));
-        g2.drawLine(sx+64, sy+sh-47, sx+64, sy+sh-22);
-        g2.setColor(new Color(185, 185, 205)); g2.setStroke(new BasicStroke(1f));
-        g2.fillPolygon(new int[]{sx+61,sx+64,sx+67}, new int[]{sy+sh-47,sy+sh-58,sy+sh-47}, 3);
-
-        // Papan nama
-        g2.setColor(new Color(95, 58, 18));
-        g2.fillRoundRect(sx+sw/2-45, sy+8, 90, 22, 6, 6);
-        g2.setColor(new Color(255, 215, 75));
-        g2.setFont(new Font("Serif", Font.BOLD, 13));
-        g2.drawString("WEAPONS", sx+sw/2-33, sy+24);
+            // Papan nama WEAPONS
+            g2.setColor(new Color(95, 58, 18));
+            g2.fillRoundRect(sx+sw/2-45, sy+8, 90, 22, 6, 6);
+            g2.setColor(new Color(255, 215, 75));
+            g2.setFont(new Font("Serif", Font.BOLD, 13));
+            g2.drawString("WEAPONS", sx+sw/2-33, sy+24);
+        }
     }
 
     private void drawPrompts(Graphics2D g2) {

@@ -4,46 +4,19 @@ import MungkinRpg.dungeon.Dungeon;
 import MungkinRpg.enemy.Enemy;
 import MungkinRpg.enemy.Slime;
 import MungkinRpg.player.Player;
-import MungkinRpg.util.TileManager;
+import MungkinRpg.util.AssetLoader;
+import MungkinRpg.util.Constants;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class DungeonOne extends Dungeon {
     private int enemiesToKill, enemiesKilled;
-    private TileManager tileManager;
-
-    // ---- MAP TILEMAP ----
-    // 25 kolom × 19 baris  (layar 800×600, tile 32px)
-    // PT=PATH_STONE  PD=PATH_STONE_DARK  WL=WALL_STONE  FL=FLOOR_DUNGEON
-    private static final int PT = TileManager.PATH_STONE;
-    private static final int PD = TileManager.PATH_STONE_DARK;
-    private static final int WL = TileManager.WALL_STONE;
-    private static final int FL = TileManager.FLOOR_DUNGEON;
-
-    private static final int[][] MAP = {
-            {WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL},
-            {WL,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,WL},
-            {WL,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,WL},
-            {WL,PT,PD,WL,WL,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,WL,WL,PT,PD,PT,PD,PT,WL},
-            {WL,PD,PT,WL,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,WL,PT,PD,PT,PD,PT,PD,WL},
-            {WL,PT,PD,WL,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,WL,PD,PT,PD,PT,PD,PT,WL},
-            {WL,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,WL},
-            {WL,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,WL},
-            {WL,PD,PT,PD,PT,PD,PT,PD,WL,WL,WL,PT,PD,WL,WL,WL,PD,PT,PD,PT,PD,PT,PD,PD,WL},
-            {WL,PT,PD,PT,PD,PT,PD,PT,WL,PD,WL,PD,PT,WL,PT,WL,PT,PD,PT,PD,PT,PD,PT,PT,WL},
-            {WL,PD,PT,PD,PT,PD,PT,PD,WL,PT,WL,PT,PD,WL,PD,WL,PD,PT,PD,PT,PD,PT,PD,PD,WL},
-            {WL,PT,PD,PT,PD,PT,PD,PT,PD,PT,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PT,WL},
-            {WL,PD,PT,PD,PT,PD,PT,PD,PT,PD,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PD,WL},
-            {WL,PT,PD,PT,PD,WL,WL,PT,PD,PT,PT,PD,PT,PD,PT,PD,PT,WL,WL,PD,PT,PD,PT,PT,WL},
-            {WL,PD,PT,PD,PT,WL,PD,PD,PT,PD,PD,PT,PD,PT,PD,PT,PD,WL,PT,PT,PD,PT,PD,PD,WL},
-            {WL,PT,PD,PT,PD,WL,WL,PT,PD,PT,PT,PD,PT,PD,PT,PD,PT,WL,WL,PD,PT,PD,PT,PT,WL},
-            {WL,PD,PT,PD,PT,PD,PT,PD,PT,PD,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PD,WL},
-            {WL,PT,PD,PT,PD,PT,PD,PT,PD,PT,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PD,PT,PT,WL},
-            {WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL},
-    };
+    private BufferedImage bgImage; // Menyimpan background PNG
 
     public DungeonOne(Player player) {
-        super("Forest Ruins", 1, player);
-        tileManager = new TileManager();
+        super("Slime Cave", 1, player);
+        // Memuat background dari AssetLoader
+        bgImage = AssetLoader.loadImage("dungeon1.png");
     }
 
     @Override
@@ -61,7 +34,7 @@ public class DungeonOne extends Dungeon {
         checkPlayerAttacks();
 
         for (Enemy e : enemies) {
-            e.setTarget(player.getX(), player.getY()); // FIX: beri tahu posisi player
+            e.setTarget(player.getX(), player.getY());
             e.update();
             if (e.getHitbox().intersects(player.getHitbox()))
                 player.takeDamage(e.getDamage());
@@ -80,17 +53,25 @@ public class DungeonOne extends Dungeon {
 
     @Override
     public void draw(Graphics2D g2) {
-        tileManager.drawMap(g2, MAP, 32); // FIX: gambar tilemap dulu
+        // Render background PNG memenuhi layar
+        if (bgImage != null) {
+            g2.drawImage(bgImage, 0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT, null);
+        } else {
+            g2.setColor(Color.DARK_GRAY);
+            g2.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        }
+
+        // Render musuh
         for (Enemy e : enemies) e.draw(g2);
-        // Counter
+
+        // Render counter musuh
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 14));
-        g2.drawString("Enemies: " + enemiesKilled + "/" + enemiesToKill, 20, 580);
-        // Nama dungeon
-        g2.setColor(new Color(255, 200, 80));
-        g2.drawString("Forest Ruins", 350, 25);
+        g2.drawString("Enemies: " + enemiesKilled + "/" + enemiesToKill, 20, 140);
     }
 
     @Override
-    public boolean isComplete() { return enemiesKilled >= enemiesToKill; }
+    public boolean isComplete() {
+        return enemiesKilled >= enemiesToKill;
+    }
 }

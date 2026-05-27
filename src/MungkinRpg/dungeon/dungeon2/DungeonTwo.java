@@ -2,54 +2,32 @@ package MungkinRpg.dungeon.dungeon2;
 
 import MungkinRpg.dungeon.Dungeon;
 import MungkinRpg.enemy.Enemy;
-import MungkinRpg.enemy.Skeleton;
 import MungkinRpg.enemy.Goblin;
+import MungkinRpg.enemy.Skeleton;
 import MungkinRpg.player.Player;
-import MungkinRpg.util.TileManager;
+import MungkinRpg.util.AssetLoader;
+import MungkinRpg.util.Constants;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class DungeonTwo extends Dungeon {
     private int enemiesToKill = 8, enemiesKilled = 0, spawnTimer = 0;
-    private TileManager tileManager;
-
-    private static final int FL = TileManager.FLOOR_DUNGEON;
-    private static final int WL = TileManager.WALL_STONE;
-    private static final int DT = TileManager.DIRT;
-
-    private static final int[][] MAP = {
-            {WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,WL,WL,WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL,WL,WL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,WL,FL,WL,FL,FL,FL,DT,DT,DT,DT,DT,FL,FL,WL,FL,WL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,WL,FL,WL,FL,FL,FL,DT,FL,FL,FL,DT,FL,FL,WL,FL,WL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,DT,FL,FL,FL,DT,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,DT,DT,DT,DT,DT,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,WL,WL,FL,FL,FL,FL,FL,FL,FL,WL,WL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,WL,WL,FL,FL,FL,FL,FL,FL,FL,WL,WL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,DT,DT,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,DT,DT,FL,FL,FL,FL,WL},
-            {WL,FL,FL,DT,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,DT,FL,FL,FL,FL,WL},
-            {WL,FL,FL,DT,DT,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,DT,DT,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL},
-    };
+    private BufferedImage bgImage; // Menyimpan background PNG
 
     public DungeonTwo(Player player) {
-        super("Cursed Cave", 2, player);
-        tileManager = new TileManager();
+        super("Goblin Camp", 2, player);
+        // Memuat background dari AssetLoader
+        bgImage = AssetLoader.loadImage("dungeon2.png");
     }
 
     @Override
     public void init() {
         enemies.clear();
-        enemiesKilled = 0; spawnTimer = 0;
         enemies.add(new Skeleton(150, 150));
         enemies.add(new Skeleton(600, 400));
         enemies.add(new Goblin(400, 200));
+        enemiesKilled = 0;
+        spawnTimer = 0;
     }
 
     @Override
@@ -62,7 +40,7 @@ public class DungeonTwo extends Dungeon {
         }
 
         for (Enemy e : enemies) {
-            e.setTarget(player.getX(), player.getY()); // FIX
+            e.setTarget(player.getX(), player.getY());
             e.update();
             if (e.getHitbox().intersects(player.getHitbox()))
                 player.takeDamage(e.getDamage());
@@ -81,15 +59,23 @@ public class DungeonTwo extends Dungeon {
 
     @Override
     public void draw(Graphics2D g2) {
-        tileManager.drawMap(g2, MAP, 32);
+        // Render background PNG memenuhi layar
+        if (bgImage != null) {
+            g2.drawImage(bgImage, 0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT, null);
+        } else {
+            g2.setColor(Color.DARK_GRAY);
+            g2.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        }
+
         for (Enemy e : enemies) e.draw(g2);
+
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 14));
-        g2.drawString("Enemies: " + enemiesKilled + "/" + enemiesToKill, 20, 580);
-        g2.setColor(new Color(150, 100, 255));
-        g2.drawString("Cursed Cave", 350, 25);
+        g2.drawString("Enemies: " + enemiesKilled + "/" + enemiesToKill, 20, 140);
     }
 
     @Override
-    public boolean isComplete() { return enemiesKilled >= enemiesToKill; }
+    public boolean isComplete() {
+        return enemiesKilled >= enemiesToKill;
+    }
 }

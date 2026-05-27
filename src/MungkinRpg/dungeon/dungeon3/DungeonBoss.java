@@ -3,41 +3,19 @@ package MungkinRpg.dungeon.dungeon3;
 import MungkinRpg.dungeon.Dungeon;
 import MungkinRpg.enemy.boss.FinalBoss;
 import MungkinRpg.player.Player;
-import MungkinRpg.util.TileManager;
+import MungkinRpg.util.AssetLoader;
+import MungkinRpg.util.Constants;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class DungeonBoss extends Dungeon {
     private FinalBoss boss;
-    private TileManager tileManager;
-
-    private static final int FL = TileManager.FLOOR_DUNGEON;
-    private static final int WL = TileManager.WALL_STONE;
-
-    private static final int[][] MAP = {
-            {WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,FL,WL},
-            {WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL,WL},
-    };
+    private BufferedImage bgImage; // Menyimpan background PNG
 
     public DungeonBoss(Player player) {
         super("Boss Chamber", 3, player);
-        tileManager = new TileManager();
+        // Memuat background dari AssetLoader
+        bgImage = AssetLoader.loadImage("dungeon3.png");
     }
 
     @Override
@@ -50,26 +28,30 @@ public class DungeonBoss extends Dungeon {
     @Override
     public void update() {
         checkPlayerAttacks();
-        boss.setTarget(player.getX(), player.getY()); // FIX
+        boss.setTarget(player.getX(), player.getY());
         boss.update();
-        if (boss.getHitbox().intersects(player.getHitbox()))
+        if (boss.getHitbox().intersects(player.getHitbox())) {
             player.takeDamage(boss.getDamage());
+        }
     }
 
     @Override
     public void draw(Graphics2D g2) {
-        tileManager.drawMap(g2, MAP, 32);
-        // Glow merah di tengah arena
-        Graphics2D g2c = (Graphics2D) g2.create();
-        g2c.setColor(new Color(150, 0, 50, 30));
-        g2c.fillOval(200, 100, 400, 400);
-        g2c.dispose();
-        boss.draw(g2);
-        g2.setColor(new Color(220, 50, 50));
-        g2.setFont(new Font("Serif", Font.BOLD, 16));
-        g2.drawString("BOSS CHAMBER", 320, 25);
+        // Render background PNG memenuhi layar
+        if (bgImage != null) {
+            g2.drawImage(bgImage, 0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT, null);
+        } else {
+            g2.setColor(Color.DARK_GRAY);
+            g2.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        }
+
+        if (boss != null && !boss.isDead()) {
+            boss.draw(g2);
+        }
     }
 
     @Override
-    public boolean isComplete() { return boss.isDead(); }
+    public boolean isComplete() {
+        return boss != null && boss.isDead();
+    }
 }

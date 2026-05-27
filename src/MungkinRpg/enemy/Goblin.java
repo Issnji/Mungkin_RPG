@@ -1,22 +1,29 @@
 package MungkinRpg.enemy;
 
-import java.awt.Graphics2D;
+import MungkinRpg.util.AssetLoader;
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
-public class Goblin extends Enemy implements EnemyAI{
+public class Goblin extends Enemy implements EnemyAI {
     private int jumpTimer = 0;
     private boolean jumping = false;
     private int jumpDX = 0, jumpDY = 0;
     private int jumpSteps = 0;
 
+    private BufferedImage image;
+
     public Goblin(int x, int y) {
         super(x, y, 60, 12, 3);
         this.expReward  = 30;
         this.goldReward = 20;
+
+        // Memuat gambar goblin.png
+        this.image = AssetLoader.loadImage("goblin.png");
     }
+
     @Override
     public void updateMovement(Enemy enemy, int playerX, int playerY) {
-
         int enemyX = enemy.getX();
         int enemyY = enemy.getY();
 
@@ -42,7 +49,6 @@ public class Goblin extends Enemy implements EnemyAI{
         jumpTimer++;
 
         if (!jumping && jumpTimer > 35) {
-            // FIX: lompat KE ARAH player
             jumping = true;
             jumpSteps = 12;
             jumpTimer = 0;
@@ -62,7 +68,7 @@ public class Goblin extends Enemy implements EnemyAI{
             jumpSteps--;
             if (jumpSteps <= 0) jumping = false;
         } else {
-            updateMovement(this, targetX, targetY); // berjalan biasa ke arah player
+            updateMovement(this, targetX, targetY);
         }
 
         x = Math.max(50, Math.min(x, 750));
@@ -72,17 +78,19 @@ public class Goblin extends Enemy implements EnemyAI{
 
     @Override
     public void draw(Graphics2D g2) {
-        g2.setColor(new Color(50, 150, 50));
-        g2.fillOval(x, y, 28, 28);
-        // Telinga
-        g2.fillPolygon(new int[]{x, x-5, x+5},        new int[]{y+5, y-5, y+10}, 3);
-        g2.fillPolygon(new int[]{x+28, x+33, x+23},   new int[]{y+5, y-5, y+10}, 3);
-        // Mata
-        g2.setColor(Color.YELLOW);
-        g2.fillOval(x+6,  y+8, 5, 5);
-        g2.fillOval(x+17, y+8, 5, 5);
-        // HP bar
-        g2.setColor(Color.RED);   g2.fillRect(x, y-10, 28, 5);
-        g2.setColor(Color.GREEN); g2.fillRect(x, y-10, (int)(28.0*hp/maxHp), 5);
+        if (image != null) {
+            // Render gambar (diperbesar menjadi 64x64 dengan offset agar center di hitbox)
+            g2.drawImage(image, x - 16, y - 32, 64, 64, null);
+        } else {
+            g2.setColor(new Color(50, 150, 50));
+            g2.fillOval(x, y, 28, 28);
+        }
+
+        // HP bar (dinaikkan posisinya agar tidak tertutup gambar)
+        g2.setColor(Color.RED);
+        g2.fillRect(x, y - 35, 32, 5);
+
+        g2.setColor(Color.GREEN);
+        g2.fillRect(x, y - 35, (int)(32.0 * hp / maxHp), 5);
     }
 }
