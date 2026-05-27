@@ -6,7 +6,7 @@ import MungkinRpg.dungeon.dungeon1.DungeonOne;
 import MungkinRpg.dungeon.dungeon2.DungeonTwo;
 import MungkinRpg.dungeon.dungeon3.DungeonBoss;
 import MungkinRpg.player.Player;
-import java.awt.*;
+import java.awt.Graphics2D;
 
 public class DungeonManager {
     private GamePanel    panel;
@@ -29,24 +29,14 @@ public class DungeonManager {
     }
 
     // ----------------------------------------------------------------
-    /**
-     * Dipanggil saat player masuk gate di kota.
-     * Langsung masuk dungeon berikutnya tanpa layar pemilihan:
-     *   - Dungeon 1 → jika belum clear
-     *   - Dungeon 2 → jika dungeon 1 sudah clear
-     *   - Dungeon 3 → jika dungeon 2 sudah clear
-     *   - Dungeon 3 lagi → jika semua sudah clear (replay boss)
-     */
     public void enterDirect() {
         if      (!dungeon1.isCleared()) startDungeon(1);
         else if (!dungeon2.isCleared()) startDungeon(2);
         else                            startDungeon(3);
     }
 
-    // Untuk kompatibilitas dengan SceneManager lama
     public void enterLobby() { enterDirect(); }
 
-    // ----------------------------------------------------------------
     public void startDungeon(int id) {
         switch (id) {
             case 1 -> currentDungeon = dungeon1;
@@ -62,32 +52,26 @@ public class DungeonManager {
     public void update() {
         if (currentDungeon == null) return;
 
+        // FIX 1: update player dengan input agar bisa bergerak & menyerang
+        player.update(panel.getInputHandler());
+
         currentDungeon.update();
 
-        // --- Dungeon selesai ---
+        // Dungeon selesai → tampilkan layar reward
         if (currentDungeon.isComplete()) {
             currentDungeon.clearDungeon();
 
-            // Hitung reward sebelum diberikan agar bisa ditampilkan di layar
             int expBonus  = player.getLevelSystem().getExpToNextLevel();
             int goldBonus = 100 * player.getLevelSystem().getLevel();
-
-            // Berikan reward ke player
             player.getLevelSystem().addDungeonClearBonus();
+            int newLevel  = player.getLevelSystem().getLevel();
 
-            int newLevel = player.getLevelSystem().getLevel();
-
-            // Tampilkan layar reward alih-alih langsung kembali ke kota
             sceneManager.showDungeonClear(
-                    currentDungeon.getName(),
-                    expBonus,
-                    goldBonus,
-                    newLevel
-            );
+                    currentDungeon.getName(), expBonus, goldBonus, newLevel);
             return;
         }
 
-        // --- Player mati ---
+        // Player mati → game over
         if (player.isDead()) {
             sceneManager.changeScene(SceneManager.Scene.GAME_OVER);
         }
@@ -95,7 +79,10 @@ public class DungeonManager {
 
     // ----------------------------------------------------------------
     public void draw(Graphics2D g2) {
-        if (currentDungeon != null) currentDungeon.draw(g2);
+        if (currentDungeon == null) return;
+
+        currentDungeon.draw(g2);   // gambar dungeon + musuh dulu
+        player.draw(g2);           // FIX 2: gambar player di atas dungeon
     }
 
     // ----------------------------------------------------------------
