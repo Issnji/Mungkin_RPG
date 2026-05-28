@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 public class DungeonTwo extends Dungeon {
     private int enemiesToKill = 8, enemiesKilled = 0, spawnTimer = 0;
     private BufferedImage bgImage; // Menyimpan background PNG
+    private boolean rewardGiven = false;
 
     public DungeonTwo(Player player) {
         super("Goblin Camp", 2, player);
@@ -49,8 +50,6 @@ public class DungeonTwo extends Dungeon {
         enemies.removeIf(e -> {
             if (e.isDead()) {
                 enemiesKilled++;
-                player.getLevelSystem().gainExp(e.getExpReward());
-                player.addGold(e.getGoldReward());
                 return true;
             }
             return false;
@@ -76,6 +75,13 @@ public class DungeonTwo extends Dungeon {
 
     @Override
     public boolean isComplete() {
+        if (enemiesKilled >= enemiesToKill && !rewardGiven){
+            // bonus clear dungeon
+            player.getLevelSystem().addDungeonClearBonus(150, 200); ;
+
+            rewardGiven = true;
+        }
+
         return enemiesKilled >= enemiesToKill;
     }
 }
