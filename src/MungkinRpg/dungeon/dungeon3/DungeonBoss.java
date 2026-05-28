@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 public class DungeonBoss extends Dungeon {
     private FinalBoss boss;
     private BufferedImage bgImage; // Menyimpan background PNG
+    private boolean rewardGiven = false;
 
     public DungeonBoss(Player player) {
         super("Boss Chamber", 3, player);
@@ -50,8 +51,18 @@ public class DungeonBoss extends Dungeon {
         }
     }
 
+
     @Override
     public boolean isComplete() {
+
+        if (boss != null && boss.isDead() && !rewardGiven) {
+
+            // Bonus clear dungeon boss
+            player.getLevelSystem().addDungeonClearBonus(250, 300);
+
+            rewardGiven = true;
+        }
+
         return boss != null && boss.isDead();
     }
 }

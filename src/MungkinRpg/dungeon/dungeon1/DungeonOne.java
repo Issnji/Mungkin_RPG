@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 public class DungeonOne extends Dungeon {
     private int enemiesToKill, enemiesKilled;
     private BufferedImage bgImage; // Menyimpan background PNG
+    private boolean rewardGiven = false;
 
     public DungeonOne(Player player) {
         super("Slime Cave", 1, player);
@@ -43,8 +44,6 @@ public class DungeonOne extends Dungeon {
         enemies.removeIf(e -> {
             if (e.isDead()) {
                 enemiesKilled++;
-                player.getLevelSystem().gainExp(e.getExpReward());
-                player.addGold(e.getGoldReward());
                 return true;
             }
             return false;
@@ -72,6 +71,13 @@ public class DungeonOne extends Dungeon {
 
     @Override
     public boolean isComplete() {
+        if (enemiesKilled >= enemiesToKill && !rewardGiven){
+            // bonus clear dungeon
+            player.getLevelSystem().addDungeonClearBonus();
+
+            rewardGiven = true;
+        }
+
         return enemiesKilled >= enemiesToKill;
     }
 }

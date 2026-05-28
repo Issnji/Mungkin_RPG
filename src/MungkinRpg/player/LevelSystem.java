@@ -23,7 +23,15 @@ public class LevelSystem {
     private void levelUp() {
         exp -= expToNextLevel;
         level++;
-        expToNextLevel = (int)(expToNextLevel * 1.5);
+
+        if (level == 2){
+            expToNextLevel = 200;
+        }
+
+        else if (level == 3) {
+            expToNextLevel = 300;
+        }
+
 
         // Naikkan stat
         player.getStats().increaseMaxHp(20);
@@ -34,10 +42,16 @@ public class LevelSystem {
         System.out.println("LEVEL UP! Sekarang level " + level);
     }
 
+    // Bonus setelah menyelesaikan dungeon (default)
     public void addDungeonClearBonus() {
-        // Bonus besar saat menyelesaikan dungeon
-        gainExp(expToNextLevel); // Langsung level up
-        player.addGold(100 * level);
+        gainExp(100);
+        player.addGold(100);
+    }
+
+    // Bonus setelah menyelesaikan dungeon (exp custom)
+    public void addDungeonClearBonus(int expReward, int goldReward){
+        gainExp(expReward);
+        player.addGold(goldReward);
     }
 
     public int getLevel() { return level; }
