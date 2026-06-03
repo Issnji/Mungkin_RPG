@@ -1,25 +1,42 @@
 package MungkinRpg.enemy;
 
 import MungkinRpg.util.AssetLoader;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 public class Slime extends Enemy implements EnemyAI {
 
-    private BufferedImage image;
+    // 0=UP, 1=DOWN, 2=LEFT, 3=RIGHT
+    private int facingDirection = 1;
+
+    private BufferedImage slimeFront;
+    private BufferedImage slimeBack;
+    private BufferedImage slimeLeft;
+    private BufferedImage slimeRight;
 
     public Slime(int x, int y) {
+
         super(x, y, 50, 10, 1);
+
         this.expReward = 20;
         this.goldReward = 15;
 
-        // Memuat gambar slime.png menggunakan AssetLoader
-        this.image = AssetLoader.loadImage("slime.png");
+        loadSprites();
+    }
+
+    private void loadSprites() {
+
+        slimeFront = AssetLoader.loadImage("karakter/slime.png");
+        slimeBack  = AssetLoader.loadImage("karakter/slimebelakang.png");
+        slimeLeft  = AssetLoader.loadImage("karakter/slimekiri.png");
+        slimeRight = AssetLoader.loadImage("karakter/slimekanan.png");
     }
 
     @Override
     public void update() {
+
         updateHitCooldown();
 
         if (targetX >= 0) {
@@ -34,14 +51,33 @@ public class Slime extends Enemy implements EnemyAI {
 
     @Override
     public void updateMovement(Enemy enemy, int playerX, int playerY) {
+
         int enemyX = enemy.getX();
         int enemyY = enemy.getY();
 
-        if (enemyX < playerX) enemyX += speed;
-        else if (enemyX > playerX) enemyX -= speed;
+        int dx = playerX - enemyX;
+        int dy = playerY - enemyY;
 
-        if (enemyY < playerY) enemyY += speed;
-        else if (enemyY > playerY) enemyY -= speed;
+        if (Math.abs(dx) > Math.abs(dy)) {
+
+            if (dx > 0) {
+                enemyX += speed;
+                facingDirection = 3;
+            } else if (dx < 0) {
+                enemyX -= speed;
+                facingDirection = 2;
+            }
+
+        } else {
+
+            if (dy > 0) {
+                enemyY += speed;
+                facingDirection = 1;
+            } else if (dy < 0) {
+                enemyY -= speed;
+                facingDirection = 0;
+            }
+        }
 
         enemy.setX(enemyX);
         enemy.setY(enemyY);
@@ -49,19 +85,55 @@ public class Slime extends Enemy implements EnemyAI {
 
     @Override
     public void draw(Graphics2D g2) {
-        if (image != null) {
-            // Render gambar (diperbesar menjadi 64x64 dengan offset agar center di hitbox)
-            g2.drawImage(image, x - 16, y - 32, 64, 64, null);
+
+        BufferedImage currentSprite = null;
+
+        switch (facingDirection) {
+
+            case 0:
+                currentSprite = slimeBack;
+                break;
+
+            case 1:
+                currentSprite = slimeFront;
+                break;
+
+            case 2:
+                currentSprite = slimeLeft;
+                break;
+
+            case 3:
+                currentSprite = slimeRight;
+                break;
+        }
+
+        if (currentSprite != null) {
+
+            g2.drawImage(
+                    currentSprite,
+                    x - 16,
+                    y - 32,
+                    64,
+                    64,
+                    null
+            );
+
         } else {
+
             g2.setColor(Color.MAGENTA);
             g2.fillRect(x, y, 32, 32);
         }
 
-        // HP Bar (dinaikkan posisinya agar tidak tertutup gambar)
+        // HP Bar
         g2.setColor(Color.RED);
         g2.fillRect(x, y - 35, 32, 5);
 
         g2.setColor(Color.GREEN);
-        g2.fillRect(x, y - 35, (int)(32.0 * hp / maxHp), 5);
+        g2.fillRect(
+                x,
+                y - 35,
+                (int) (32.0 * hp / maxHp),
+                5
+        );
     }
 }
