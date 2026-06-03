@@ -166,8 +166,11 @@ public class DungeonClearUI {
         // Hint kontrol
         if (!inputLocked) {
             g2.setFont(fontHint);
-            g2.setColor(new Color(120, 80, 30, 180));
-            drawCentered(g2, "Click W/S to Navigate and Enter/E to Choose", PX, PW, PY + PH - 20);
+            g2.setColor(new Color(70, 35, 8));
+
+            drawCentered(g2,
+                    "Click W/S to Navigate and Enter/E to Choose",
+                    PX, PW, PY + PH - 20);
         }
     }
 

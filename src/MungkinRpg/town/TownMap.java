@@ -161,9 +161,13 @@ public class TownMap {
         if (shop.isOpen())   shop.draw(g2);
         if (npc.isTalking()) npc.drawDialogue(g2);
 
+        g2.setFont(new Font("Monospaced", Font.BOLD, 13));
+
+        g2.setColor(Color.BLACK);
+        g2.drawString("[ESC] Dungeon Lobby", 11, 19);
+
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.PLAIN, 13));
-        g2.drawString("Press ESC → Dungeon Lobby", 10, 18);
+        g2.drawString("[ESC] Dungeon Lobby", 10, 18);
     }
 
     // ----------------------------------------------------------------
@@ -259,5 +263,9 @@ public class TownMap {
         g2.fillRoundRect(bx, y-16, tw+16, 22, 8, 8);
         g2.setColor(Color.WHITE);
         g2.drawString(text, bx+8, y);
+    }
+
+    public Shop getShop() {
+        return shop;
     }
 }
