@@ -11,18 +11,32 @@ public class MusicManager {
 
     public void play(String filename) {
         if (currentTrack != null && currentTrack.equals(filename)) return;
+
         stop();
 
         try {
-            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("src/com/MungkinRpg/assets/audio/" + filename));
+            File file = new File("src/MungkinRpg/assets/audio/" + filename);
+
+            System.out.println("Loading: " + file.getAbsolutePath());
+            System.out.println("Exists : " + file.exists());
+
+            AudioInputStream ais =
+                    AudioSystem.getAudioInputStream(file);
+
             currentClip = AudioSystem.getClip();
             currentClip.open(ais);
+
+            currentClip.start();
             currentClip.loop(Clip.LOOP_CONTINUOUSLY);
 
-            volumeControl = (FloatControl) currentClip.getControl(FloatControl.Type.MASTER_GAIN);
+            volumeControl =
+                    (FloatControl) currentClip.getControl(
+                            FloatControl.Type.MASTER_GAIN);
+
             currentTrack = filename;
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            System.out.println("Music error: " + e.getMessage());
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

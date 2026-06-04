@@ -1,5 +1,7 @@
 package MungkinRpg.core;
 
+import MungkinRpg.audio.MusicManager;
+import MungkinRpg.audio.SoundEffect;
 import MungkinRpg.player.Player;
 import MungkinRpg.town.TownMap;
 import MungkinRpg.dungeon.DungeonManager;
@@ -7,11 +9,6 @@ import MungkinRpg.ui.GameOverUI;
 import MungkinRpg.ui.DungeonClearUI;
 import java.awt.Graphics2D;
 
-/**
- * SceneManager — sekarang tidak ada MAIN_MENU.
- * Main menu ditangani oleh MainMenuPanel (Swing layer).
- * Scene yang ada: TOWN, DUNGEON, DUNGEON_CLEAR, GAME_OVER.
- */
 public class SceneManager {
     public enum Scene { TOWN, DUNGEON, DUNGEON_CLEAR, GAME_OVER }
 
@@ -24,15 +21,20 @@ public class SceneManager {
     private GameOverUI     gameOverUI;
     private DungeonClearUI dungeonClearUI;
 
+    private MusicManager   musicManager;
+
     public SceneManager(GamePanel panel, Player player) {
         this.panel  = panel;
         this.player = player;
-        this.currentScene = Scene.TOWN; // langsung mulai di TOWN
+        this.currentScene = Scene.TOWN;
 
         townMap        = new TownMap(panel, player, this);
         dungeonManager = new DungeonManager(panel, player, this);
         gameOverUI     = new GameOverUI(this);
         dungeonClearUI = new DungeonClearUI(this);
+
+        musicManager   = new MusicManager();
+        musicManager.play("town.wav"); // musik awal saat game mulai di TOWN
     }
 
     public void update(InputHandler input) {
@@ -55,14 +57,34 @@ public class SceneManager {
 
     public void changeScene(Scene scene) {
         this.currentScene = scene;
-        if (scene == Scene.DUNGEON) dungeonManager.enterDirect();
+
+        switch (scene) {
+            case TOWN -> {
+                musicManager.play("town.wav");
+            }
+            case DUNGEON -> {
+                SoundEffect.play("enterdungeon.wav"); // SFX masuk dungeon
+                musicManager.play("dungeon.wav");     // lalu musik dungeon
+                dungeonManager.enterDirect();
+            }
+            case GAME_OVER -> {
+                musicManager.play("lose.wav");
+            }
+            case DUNGEON_CLEAR -> {
+                musicManager.play("win.wav");
+            }
+        }
     }
 
     /** Dipanggil DungeonManager saat dungeon selesai. */
     public void showDungeonClear(String name, int exp, int gold, int level) {
         dungeonClearUI.setRewards(name, exp, gold, level);
         currentScene = Scene.DUNGEON_CLEAR;
+        musicManager.play("win.wav");
     }
+
+    /** Akses MusicManager dari luar (misal Shop, UI, dsb). */
+    public MusicManager getMusicManager() { return musicManager; }
 
     public Scene          getCurrentScene()   { return currentScene; }
     public DungeonManager getDungeonManager() { return dungeonManager; }
