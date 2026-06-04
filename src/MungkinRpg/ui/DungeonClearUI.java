@@ -5,6 +5,7 @@ import MungkinRpg.core.InputHandler;
 import MungkinRpg.util.AssetLoader;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import MungkinRpg.audio.SoundEffect;
 
 // Layar reward setelah dungeon selesai
 
