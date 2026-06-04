@@ -5,8 +5,8 @@ import  MungkinRpg.player.Player;
 import  MungkinRpg.weapon.Bow;
 import  MungkinRpg.weapon.Spear;
 import  MungkinRpg.weapon.Sword;
-import java.awt.Color;
-import java.awt.Graphics2D;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,24 +67,95 @@ public class Shop {
     }
 
     public void draw(Graphics2D g2) {
-        g2.setColor(new Color(0, 0, 0, 200));
-        g2.fillRect(150, 100, 500, 400);
-        g2.setColor(Color.WHITE);
-        g2.drawRect(150, 100, 500, 400);
-        g2.drawString("WEAPON SHOP - Gold: " + player.getInventory().getGold(), 170, 130);
+
+        int x = 150;
+        int y = 100;
+        int w = 500;
+        int h = 400;
+
+        // =========================
+        // PANEL SHOP
+        // =========================
+
+        // Shadow
+        g2.setColor(new Color(0, 0, 0, 120));
+        g2.fillRoundRect(x + 5, y + 5, w, h, 18, 18);
+
+        // Outer frame
+        g2.setColor(new Color(90, 50, 20));
+        g2.fillRoundRect(x, y, w, h, 18, 18);
+
+        // Inner wood
+        g2.setColor(new Color(140, 90, 40));
+        g2.fillRoundRect(x + 6, y + 6, w - 12, h - 12, 14, 14);
+
+        // Main panel
+        g2.setColor(new Color(205, 170, 110));
+        g2.fillRoundRect(x + 12, y + 12, w - 24, h - 24, 10, 10);
+
+        // =========================
+        // TITLE
+        // =========================
+
+        g2.setFont(new Font("Monospaced", Font.BOLD, 20));
+
+        g2.setColor(new Color(60, 30, 10));
+        g2.drawString("WEAPON SHOP", 185, 140);
+
+        g2.setColor(new Color(255, 225, 140));
+        g2.drawString("WEAPON SHOP", 183, 138);
+
+        // Gold info
+        g2.setFont(new Font("Monospaced", Font.BOLD, 14));
+
+        g2.setColor(new Color(70, 40, 15));
+        g2.drawString("Gold: " + player.getInventory().getGold(), 185, 165);
+
+        // =========================
+        // ITEM LIST
+        // =========================
 
         for (int i = 0; i < items.size(); i++) {
-            int y = 170 + (i * 60);
+
+            int itemY = 210 + (i * 70);
+
             ShopItem item = items.get(i);
+
+            // Selected item background
             if (i == selectedIndex) {
-                g2.setColor(Color.YELLOW);
-                g2.fillRect(160, y - 20, 480, 50);
+
+                g2.setColor(new Color(170, 120, 40));
+                g2.fillRoundRect(170, itemY - 28, 460, 58, 12, 12);
+
+                // highlight
+                g2.setColor(new Color(255, 255, 255, 40));
+                g2.fillRoundRect(172, itemY - 26, 456, 18, 10, 10);
+
+                g2.setColor(new Color(255, 235, 170));
+
+            } else {
+
+                g2.setColor(new Color(75, 45, 20));
             }
-            g2.setColor(Color.WHITE);
-            g2.drawString(item.getName() + " - " + item.getPrice() + "G", 180, y);
-            g2.drawString(item.getDescription(), 180, y + 20);
+
+            // Weapon name
+            g2.setFont(new Font("Monospaced", Font.BOLD, 15));
+            g2.drawString(item.getName() + " - " + item.getPrice() + "G", 190, itemY);
+
+            // Description
+            g2.setFont(new Font("Monospaced", Font.PLAIN, 13));
+            g2.setColor(new Color(95, 60, 30));
+            g2.drawString(item.getDescription(), 190, itemY + 20);
         }
-        g2.drawString("E to Buy | ESC to Close", 170, 470);
+
+        // =========================
+        // BOTTOM INFO
+        // =========================
+
+        g2.setFont(new Font("Monospaced", Font.BOLD, 13));
+
+        g2.setColor(new Color(70, 40, 15));
+        g2.drawString("E to Buy | ESC to Close", 185, 470);
     }
 
     public boolean isOpen() { return open; }

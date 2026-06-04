@@ -88,4 +88,6 @@ public class SceneManager {
 
     public Scene          getCurrentScene()   { return currentScene; }
     public DungeonManager getDungeonManager() { return dungeonManager; }
+    public boolean isShopOpen() {return townMap.getShop().isOpen();
+    }
 }

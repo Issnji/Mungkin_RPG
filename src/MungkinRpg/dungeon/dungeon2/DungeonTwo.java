@@ -68,9 +68,15 @@ public class DungeonTwo extends Dungeon {
 
         for (Enemy e : enemies) e.draw(g2);
 
+        String enemyText = "Enemies: " + enemiesKilled + "/" + enemiesToKill;
+
+        g2.setFont(new Font("Monospaced", Font.BOLD, 13));
+
+        g2.setColor(Color.BLACK);
+        g2.drawString(enemyText,  21, 191);
+
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 14));
-        g2.drawString("Enemies: " + enemiesKilled + "/" + enemiesToKill, 20, 140);
+        g2.drawString(enemyText, 20, 190);
     }
 
     @Override
